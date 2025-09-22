@@ -2,294 +2,269 @@
 
 ## Property Management System
 
-**RentMaster** is a scalable and maintainable web application designed to streamline the management of properties, tenants, leases, payments, and more. Built with modern technologies like Node.js, TypeScript, Express, React, and Tailwind CSS, this system is optimized for performance, security, and a seamless user experience.
-
-### Tech Stack
-
-#### Backend
-
-* **Node.js**: Runtime environment for scalable applications.
-* **TypeScript**: Adds static typing for improved maintainability.
-* **Express**: Lightweight web framework for API routes.
-* **Prisma**: ORM for PostgreSQL database interactions.
-* **Joi**: Schema validation for input.
-* **JWT**: Token-based authentication.
-* **Bcrypt**: Password hashing for security.
-* **Swagger**: API documentation with interactive UI.
-* **Winston**: Logging utility for debugging and audits.
-* **Helmet**: Secures HTTP headers.
-* **CORS**: Manages frontend-backend communication.
-
-#### Frontend
-
-* **React**: UI library for building user interfaces.
-* **Vite**: Fast build tool for development.
-* **Tailwind CSS**: Utility-first CSS for rapid styling.
-* **Shadcn/UI**: Customizable UI components for building clean interfaces.
-* **React Router**: Client-side routing.
-* **React Hook Form + Zod**: Efficient form handling and validation.
-* **React Query**: Data fetching and caching.
-* **Axios**: API requests with JWT interceptors.
-
-#### Database
-
-* **PostgreSQL**: Relational database supporting UUID, JSONB, and TIMESTAMP types.
+**RentMaster** is a modern, scalable property management platform designed to manage **properties, tenants, leases, payments, and documents** with ease.
+Built with **Node.js, TypeScript, Prisma, React, and Tailwind**, it provides a secure, maintainable, and developer-friendly experience.
 
 ---
 
-### Features
+### 🚀 Tech Stack
 
-* **User Management**: Role-based access (Admin, Manager) with registration and login.
-* **Property Management**: Create, read, update, and delete properties and their local units.
-* **Tenant Management**: Manage tenant details (individuals or companies).
-* **Lease Management**: Create and track leases with billing cycles and statuses.
-* **Payments**: Record and track payments (bank transfer, cash) and document uploads.
-* **Document Management**: Upload and manage files (e.g., lease contracts, payment proofs), with optional S3 integration.
-* **Notifications**: Email, SMS, or system notifications with retry logic.
-* **Audit Logs**: Track all user actions for accountability.
-* **UI/UX**: A responsive and intuitive interface with clean navigation, forms, and data tables.
-* **API Documentation**: Interactive Swagger UI for easy API exploration.
+**Backend**
 
----
+* Node.js + TypeScript – Runtime and type safety
+* Express – REST API framework
+* Prisma – Type-safe ORM for PostgreSQL
+* Joi – Input validation
+* JWT + Bcrypt – Authentication & password security
+* Winston – Structured logging
+* Swagger – Interactive API documentation
+* Helmet & CORS – Security middleware
 
-### Installation
+**Frontend**
 
-#### Backend
+* React + Vite – UI & development tooling
+* Tailwind CSS + Shadcn/UI – Fast, clean, customizable styling
+* React Query – Data fetching and caching
+* React Hook Form + Zod – Form handling and validation
+* Axios – API requests with interceptors
 
-1. **Clone the repository**:
+**Database**
 
-   ```bash
-   git clone https://github.com/andremugabo/RentMaster.git
-   cd backend
-   ```
-
-2. **Install dependencies**:
-
-   ```bash
-   npm install
-   ```
-
-3. **Set up environment variables**:
-   Create a `.env` file and define the following variables:
-
-   ```env
-   PORT=5000
-   DATABASE_URL=postgresql://user:password@localhost:5432/property_management
-   JWT_SECRET=your-secret-key
-   ```
-
-4. **Initialize Prisma and run migrations**:
-
-   ```bash
-   npx prisma generate
-   npx prisma migrate dev --name init
-   ```
-
-5. **Start the server**:
-
-   * Development:
-
-     ```bash
-     npm run dev
-     ```
-   * Production:
-
-     ```bash
-     npm run build && npm start
-     ```
-
-6. **Access the API**:
-
-   * API: `http://localhost:5000/api`
-   * Swagger Docs: `http://localhost:5000/api-docs`
-
-#### Frontend
-
-1. **Navigate to the frontend directory**:
-
-   ```bash
-   cd frontend
-   ```
-
-2. **Install dependencies**:
-
-   ```bash
-   npm install
-   ```
-
-3. **Set up Tailwind CSS and Shadcn/UI**:
-   Follow the documentation for initializing Tailwind CSS and Shadcn/UI in your project.
-
-4. **Configure API base URL**:
-   In `src/services/api.ts`, update the API base URL:
-
-   ```typescript
-   const api = axios.create({
-     baseURL: 'http://localhost:5000/api',
-   });
-   ```
-
-5. **Start the development server**:
-
-   ```bash
-   npm run dev
-   ```
-
-6. **Access the app**:
-   Visit `http://localhost:5173` in your browser.
+* PostgreSQL – Relational database with UUID & JSONB support
 
 ---
 
-### Folder Structure
+### 📦 Features
 
-#### Backend
+* 👥 **User Management** – Role-based access (Admin, Manager)
+* 🏢 **Property Management** – Properties, locals, and their statuses
+* 🧾 **Lease Management** – Billing cycles, statuses, and renewals
+* 💳 **Payments** – Record transactions and upload proofs
+* 📂 **Documents** – Lease contracts, payment receipts (S3-ready)
+* 🔔 **Notifications** – Email, SMS, or system alerts
+* 🛡 **Audit Logs** – Track user actions for security
+* 📊 **Reports** – Payments, occupancy, and performance dashboards
+* 📱 **Responsive UI** – Mobile- and desktop-friendly
 
-```plaintext
-backend/
-├── prisma/
-│   └── schema.prisma       # Database schema
-├── src/
-│   ├── config/            # Configuration files (env, swagger)
-│   ├── controllers/       # Handlers for HTTP requests
-│   ├── middlewares/       # Auth, validation, error handling
-│   ├── routes/            # Express routers
-│   ├── services/          # Business logic
-│   ├── utils/             # Utility functions (JWT, logging)
-│   ├── app.ts             # Express app setup
-│   └── server.ts          # Entry point
-├── .env                   # Environment variables
-├── tsconfig.json
-└── package.json
-```
+---
 
-#### Frontend
+### 🗄 Example Prisma Schema
 
-```plaintext
-frontend/
-├── src/
-│   ├── assets/            # Images, icons
-│   ├── components/        # Reusable UI components
-│   ├── features/          # Entity-specific components (auth, users, etc.)
-│   ├── hooks/             # Custom hooks
-│   ├── layouts/           # Dashboard layout
-│   ├── pages/             # Top-level routes
-│   ├── services/          # API client
-│   ├── store/             # State management
-│   ├── utils/             # Helper functions
-│   ├── App.tsx
-│   └── main.tsx
-├── tailwind.config.js
-├── vite.config.ts
-└── package.json
+```prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String   @id @default(uuid())
+  email         String   @unique
+  password_hash String
+  full_name     String
+  role          Role
+  is_active     Boolean  @default(true)
+  created_at    DateTime @default(now())
+  leases        Lease[]
+}
+
+model Property {
+  id          String  @id @default(uuid())
+  name        String
+  location    String
+  description String?
+  locals      Local[]
+  created_at  DateTime @default(now())
+}
+
+model Local {
+  id             String   @id @default(uuid())
+  reference_code String   @unique
+  status         LocalStatus
+  size_m2        Float?
+  property       Property @relation(fields: [property_id], references: [id])
+  property_id    String
+  leases         Lease[]
+}
+
+model Lease {
+  id         String   @id @default(uuid())
+  start_date DateTime
+  end_date   DateTime
+  status     LeaseStatus
+  local      Local    @relation(fields: [local_id], references: [id])
+  local_id   String
+  tenant     Tenant   @relation(fields: [tenant_id], references: [id])
+  tenant_id  String
+  payments   Payment[]
+  documents  Document[] @relation("LeaseDocuments")
+}
+
+model Payment {
+  id             String       @id @default(uuid())
+  amount         Float
+  date           DateTime     @default(now())
+  payment_mode   PaymentMode  @relation(fields: [payment_mode_id], references: [id])
+  payment_mode_id String
+  lease          Lease        @relation(fields: [lease_id], references: [id])
+  lease_id       String
+  documents      Document[]   @relation("PaymentDocuments")
+}
+
+model Document {
+  id         String   @id @default(uuid())
+  file_url   String
+  file_type  String
+  uploaded_at DateTime @default(now())
+  owner_id   String
+  lease      Lease?   @relation("LeaseDocuments", fields: [owner_id], references: [id], map: "lease_documents_fkey")
+  payment    Payment? @relation("PaymentDocuments", fields: [owner_id], references: [id], map: "payment_documents_fkey")
+}
+
+model PaymentMode {
+  id            String  @id @default(uuid())
+  code          String  @unique
+  display_name  String
+  requires_proof Boolean @default(false)
+  payments      Payment[]
+}
+
+model Tenant {
+  id        String   @id @default(uuid())
+  name      String
+  email     String?
+  phone     String?
+  leases    Lease[]
+}
+
+enum Role {
+  ADMIN
+  MANAGER
+}
+
+enum LocalStatus {
+  AVAILABLE
+  OCCUPIED
+  UNDER_MAINTENANCE
+}
+
+enum LeaseStatus {
+  ACTIVE
+  EXPIRED
+  TERMINATED
+}
 ```
 
 ---
 
-### Usage
+### 📊 Prisma ERD (Entity-Relationship Diagram)
 
-* **Login**: Access `/login` to authenticate. Admins can manage all entities, while managers have restricted access.
-* **Dashboard**: View and manage properties, tenants, leases, payments, and documents.
-* **Notifications**: The system sends notifications for upcoming payment due dates, lease renewals, and more.
-* **Audit Logs**: View detailed logs of user actions in the admin panel.
+You can automatically generate a visual ERD from the Prisma schema.
 
----
+#### 1️⃣ Install ERD Generator
 
-### API Endpoints
+```bash
+npm install --save-dev prisma-erd-generator @mermaid-js/mermaid-cli
+```
 
-* **Auth**: `POST /auth/login` (email, password)
-* **Users**: `GET/POST/PUT/DELETE /users` (admin-only for some)
-* **Properties**: `GET/POST/PUT/DELETE /properties`
-* **Locals**: `GET/POST/PUT/DELETE /locals`
-* **Tenants**: `GET/POST/PUT/DELETE /tenants`
-* **Leases**: `GET/POST/PUT/DELETE /leases`
-* **Payments**: `GET/POST/PUT/DELETE /payments`
-* **Documents**: `POST /documents` (file upload), `GET /documents`
-* **Notifications**: `GET/POST /notifications`
-* **Audit Logs**: `GET /audit-logs` (admin-only)
+Then add this to your `schema.prisma`:
 
-For detailed specifications, check Swagger UI at `/api-docs`.
+```prisma
+generator erd {
+  provider = "prisma-erd-generator"
+  output   = "./ERD.svg"
+}
+```
 
----
+#### 2️⃣ Generate ERD
 
-### UI/UX Highlights
+```bash
+npx prisma generate
+```
 
-* **Responsive**: Fully optimized for mobile and desktop, built with Tailwind CSS.
-* **Accessible**: Designed with accessibility in mind, including ARIA labels and keyboard navigation.
-* **Intuitive**: Easy-to-navigate sidebar, well-structured forms, and data tables with sorting and pagination.
-* **User Feedback**: Real-time feedback with loading spinners, error toasts, and success messages.
-* **Role-Based Access**: Admins have full access, while managers have restricted views.
+This will create `ERD.svg` inside your project.
+Open it in any browser or markdown preview to visualize your database model.
 
 ---
 
-### Security
+### ⚙️ Installation
 
-* **Backend**:
+#### Backend Setup
 
-  * JWT for authentication with role-based access.
-  * Password hashing using bcrypt.
-  * Input validation with Joi.
-  * Helmet for HTTP header security.
+```bash
+git clone https://github.com/andremugabo/RentMaster.git
+cd backend
+npm install
+npm install --save-dev nodemon
+```
 
-* **Frontend**:
+Create a `.env` file:
 
-  * Store JWT securely (use `httpOnly` cookies or localStorage).
-  * Validate forms using Zod, ensuring they match backend Joi schemas.
-  * Sanitize user inputs to prevent XSS attacks.
+```env
+PORT=5000
+DATABASE_URL=postgresql://postgres:123@localhost:5432/rentmaster_db?schema=public
+JWT_SECRET=supersecretkey
+JWT_EXPIRES_IN=1h
+```
 
----
+Run migrations & generate client:
 
-### Scaling and Maintenance
+```bash
+npx prisma generate
+npx prisma migrate dev --name init
+```
 
-#### Backend
+Seed database with initial data:
 
-* Add **Redis** for caching.
-* Use **PM2** or **Docker** for deployment in production.
-* Implement **rate limiting** for API requests.
-* Optimize queries with **Prisma** indexing.
+```bash
+npx prisma db seed
+```
 
-#### Frontend
+Start the server:
 
-* **Lazy-load** components to improve load times.
-* Use **React Query** for caching and optimistic updates.
-* Ensure **code consistency** with ESLint/Prettier.
-
-#### Database
-
-* Regular **backups** and query optimizations.
-
----
-
-### Future Enhancements
-
-* **Analytics**: Dashboard with charts for trends in payments and occupancy.
-* **Multi-Tenancy**: Support for managing multiple organizations.
-* **Notifications**: Integrate with services like **SendGrid** or **Twilio** for email/SMS.
-* **File Storage**: Integrate with **AWS S3** for file uploads.
-* **Testing**: Add **Jest** for backend and **Vitest/Cypress** for frontend testing.
+```bash
+npm run dev   # Development
+npm run build && npm start  # Production
+```
 
 ---
 
-### Contributing
+### 🔑 Prisma Cheat Sheet
 
-1. Fork the repository.
-2. Create a feature branch: `git checkout -b feature-name`.
-3. Commit your changes: `git commit -m "Add feature"`.
-
-
-4. Push to your branch: `git push origin feature-name`.
-5. Open a pull request to merge your changes.
-
----
-
-### License
-
-MIT License. See the LICENSE file for details.
+| Task             | Command                                            |
+| ---------------- | -------------------------------------------------- |
+| Format schema    | `npx prisma format`                                |
+| Generate client  | `npx prisma generate`                              |
+| Create migration | `npx prisma migrate dev --name <name>`             |
+| View DB in GUI   | `npx prisma studio`                                |
+| Seed database    | `npx prisma db seed`                               |
+| Generate ERD     | `npx prisma generate` (after installing generator) |
 
 ---
 
-### Visual Enhancements
+### 📈 Scaling & Maintenance
 
-* **Screenshots**:
- 
-* **Videos**:
-  
+* Caching with **Redis**
+* Containerization with **Docker**
+* Background jobs (queues) for heavy tasks
+* Indexing and query optimization for performance
+
+---
+
+### 🤝 Contributing
+
+1. Fork & clone repo
+2. Create a branch `git checkout -b feature-name`
+3. Commit changes `git commit -m "Add feature"`
+4. Push branch `git push origin feature-name`
+5. Open a pull request
+
+---
+
+### 📜 License
+
+MIT License – free to use and modify.
+
