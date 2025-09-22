@@ -1,44 +1,38 @@
 {
   // Visit https://aka.ms/tsconfig to read more about this file
   "compilerOptions": {
-    // File Layout
-    // "rootDir": "./src",
-    // "outDir": "./dist",
+    /* 🌐 Module & Target - Crucial for ESM + Prisma */
+    "module": "NodeNext",               // ✅ required for ESM + ts-node
+    "target": "ES2020",                 // ✅ avoids #private field errors
+    "moduleResolution": "NodeNext",     // ✅ must match module type
+    "esModuleInterop": true,            // ✅ fixes bcrypt default import
 
-    // Environment Settings
-    // See also https://aka.ms/tsconfig/module
-    "module": "nodenext",
-    "target": "esnext",
-    "types": [],
-    // For nodejs:
-    // "lib": ["esnext"],
-    // "types": ["node"],
-    // and npm install -D @types/node
+    /* 🌎 Environment Settings */
+    "lib": ["ES2020"],                  // ✅ includes modern features
+    "types": ["node"],                  // ✅ ensures Node globals are available
 
-    // Other Outputs
+    /* 📜 Output Options */
     "sourceMap": true,
     "declaration": true,
     "declarationMap": true,
 
-    // Stricter Typechecking Options
+    /* ✅ Type Safety */
     "noUncheckedIndexedAccess": true,
     "exactOptionalPropertyTypes": true,
-
-    // Style Options
-    // "noImplicitReturns": true,
-    // "noImplicitOverride": true,
-    // "noUnusedLocals": true,
-    // "noUnusedParameters": true,
-    // "noFallthroughCasesInSwitch": true,
-    // "noPropertyAccessFromIndexSignature": true,
-
-    // Recommended Options
     "strict": true,
-    "jsx": "react-jsx",
-    "verbatimModuleSyntax": false,
+
+    /* 💡 Style / Quality Options (Optional but Recommended) */
+    "noImplicitReturns": true,
+    "noImplicitOverride": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "noPropertyAccessFromIndexSignature": true,
+
+    /* 🏗 Build System Support */
     "isolatedModules": true,
-    "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
-    "skipLibCheck": true,
-  }
+    "skipLibCheck": true
+  },
+  "include": ["prisma/**/*.ts", "src/**/*.ts"]
 }

@@ -1,9 +1,16 @@
 # RentMaster
 
-## Property Management System
+## 🏢 Property Management System
 
-**RentMaster** is a modern, scalable property management platform designed to manage **properties, tenants, leases, payments, and documents** with ease.
+**RentMaster** is a modern, scalable property management platform designed to simplify **property, tenant, lease, payment, and document management** across multiple locations.
 Built with **Node.js, TypeScript, Prisma, React, and Tailwind**, it provides a secure, maintainable, and developer-friendly experience.
+
+---
+
+### 🎯 Why RentMaster?
+
+Managing rental properties across multiple locations is challenging — spreadsheets and manual tracking often lead to **missed payments, lost contracts, and frustrated tenants**.
+**RentMaster** centralizes everything in one place: **tenants, leases, payments, notifications, and reports** — making property management **faster, more reliable, and stress-free**.
 
 ---
 
@@ -11,26 +18,39 @@ Built with **Node.js, TypeScript, Prisma, React, and Tailwind**, it provides a s
 
 **Backend**
 
-* Node.js + TypeScript – Runtime and type safety
-* Express – REST API framework
-* Prisma – Type-safe ORM for PostgreSQL
-* Joi – Input validation
-* JWT + Bcrypt – Authentication & password security
-* Winston – Structured logging
-* Swagger – Interactive API documentation
-* Helmet & CORS – Security middleware
+* **Node.js + TypeScript** – Runtime and type safety
+* **Express** – REST API framework
+* **Prisma** – Type-safe ORM for PostgreSQL
+* **Joi** – Input validation
+* **JWT + Bcrypt** – Authentication & password security
+* **Winston** – Structured logging
+* **Swagger** – Interactive API documentation
+* **Helmet & CORS** – Security middleware
 
 **Frontend**
 
-* React + Vite – UI & development tooling
-* Tailwind CSS + Shadcn/UI – Fast, clean, customizable styling
-* React Query – Data fetching and caching
-* React Hook Form + Zod – Form handling and validation
-* Axios – API requests with interceptors
+* **React + Vite** – UI & development tooling
+* **Tailwind CSS + Shadcn/UI** – Fast, clean, customizable styling
+* **React Query** – Data fetching and caching
+* **React Hook Form + Zod** – Form handling and validation
+* **Axios** – API requests with interceptors
 
 **Database**
 
-* PostgreSQL – Relational database with UUID & JSONB support
+* **PostgreSQL** – Relational database with UUID & JSONB support
+
+---
+
+### 🏗 System Architecture
+
+```mermaid
+graph TD
+    A[Frontend: React + Vite] -->|REST API| B[Backend: Express + TypeScript]
+    B -->|ORM| C[(PostgreSQL)]
+    B --> D[Authentication: JWT + Bcrypt]
+    B --> E[Storage: S3 or Local File System]
+    B --> F[Logging: Winston]
+```
 
 ---
 
@@ -45,6 +65,31 @@ Built with **Node.js, TypeScript, Prisma, React, and Tailwind**, it provides a s
 * 🛡 **Audit Logs** – Track user actions for security
 * 📊 **Reports** – Payments, occupancy, and performance dashboards
 * 📱 **Responsive UI** – Mobile- and desktop-friendly
+
+---
+
+### 🔑 Environment Variables
+
+| Variable         | Description                       | Example                                                  |
+| ---------------- | --------------------------------- | -------------------------------------------------------- |
+| `PORT`           | Server port                       | `5000`                                                   |
+| `DATABASE_URL`   | Prisma database connection string | `postgresql://postgres:123@localhost:5432/rentmaster_db` |
+| `JWT_SECRET`     | Secret key for JWT signing        | `supersecretkey`                                         |
+| `JWT_EXPIRES_IN` | Token expiry duration             | `1h`                                                     |
+
+Create a `.env` file in your backend folder with the above variables.
+
+---
+
+### 📚 API Documentation
+
+When the server is running, visit:
+
+```
+http://localhost:5000/api/docs
+```
+
+to open **Swagger UI** and test all API endpoints interactively.
 
 ---
 
@@ -104,32 +149,32 @@ model Lease {
 }
 
 model Payment {
-  id             String       @id @default(uuid())
-  amount         Float
-  date           DateTime     @default(now())
-  payment_mode   PaymentMode  @relation(fields: [payment_mode_id], references: [id])
+  id              String       @id @default(uuid())
+  amount          Float
+  date            DateTime     @default(now())
+  payment_mode    PaymentMode  @relation(fields: [payment_mode_id], references: [id])
   payment_mode_id String
-  lease          Lease        @relation(fields: [lease_id], references: [id])
-  lease_id       String
-  documents      Document[]   @relation("PaymentDocuments")
+  lease           Lease        @relation(fields: [lease_id], references: [id])
+  lease_id        String
+  documents       Document[]   @relation("PaymentDocuments")
 }
 
 model Document {
-  id         String   @id @default(uuid())
-  file_url   String
-  file_type  String
+  id          String   @id @default(uuid())
+  file_url    String
+  file_type   String
   uploaded_at DateTime @default(now())
-  owner_id   String
-  lease      Lease?   @relation("LeaseDocuments", fields: [owner_id], references: [id], map: "lease_documents_fkey")
-  payment    Payment? @relation("PaymentDocuments", fields: [owner_id], references: [id], map: "payment_documents_fkey")
+  owner_id    String
+  lease       Lease?   @relation("LeaseDocuments", fields: [owner_id], references: [id])
+  payment     Payment? @relation("PaymentDocuments", fields: [owner_id], references: [id])
 }
 
 model PaymentMode {
-  id            String  @id @default(uuid())
-  code          String  @unique
-  display_name  String
+  id             String  @id @default(uuid())
+  code           String  @unique
+  display_name   String
   requires_proof Boolean @default(false)
-  payments      Payment[]
+  payments       Payment[]
 }
 
 model Tenant {
@@ -160,54 +205,15 @@ enum LeaseStatus {
 
 ---
 
-### 📊 Prisma ERD (Entity-Relationship Diagram)
-
-You can automatically generate a visual ERD from the Prisma schema.
-
-#### 1️⃣ Install ERD Generator
-
-```bash
-npm install --save-dev prisma-erd-generator @mermaid-js/mermaid-cli
-```
-
-Then add this to your `schema.prisma`:
-
-```prisma
-generator erd {
-  provider = "prisma-erd-generator"
-  output   = "./ERD.svg"
-}
-```
-
-#### 2️⃣ Generate ERD
-
-```bash
-npx prisma generate
-```
-
-This will create `ERD.svg` inside your project.
-Open it in any browser or markdown preview to visualize your database model.
-
----
-
 ### ⚙️ Installation
 
 #### Backend Setup
 
 ```bash
 git clone https://github.com/andremugabo/RentMaster.git
-cd backend
+cd RentMaster/backend
 npm install
 npm install --save-dev nodemon
-```
-
-Create a `.env` file:
-
-```env
-PORT=5000
-DATABASE_URL=postgresql://postgres:123@localhost:5432/rentmaster_db?schema=public
-JWT_SECRET=supersecretkey
-JWT_EXPIRES_IN=1h
 ```
 
 Run migrations & generate client:
@@ -226,22 +232,70 @@ npx prisma db seed
 Start the server:
 
 ```bash
-npm run dev   # Development
+npm run dev             # Development
 npm run build && npm start  # Production
 ```
 
 ---
 
-### 🔑 Prisma Cheat Sheet
+### 🧪 Testing
 
-| Task             | Command                                            |
-| ---------------- | -------------------------------------------------- |
-| Format schema    | `npx prisma format`                                |
-| Generate client  | `npx prisma generate`                              |
-| Create migration | `npx prisma migrate dev --name <name>`             |
-| View DB in GUI   | `npx prisma studio`                                |
-| Seed database    | `npx prisma db seed`                               |
-| Generate ERD     | `npx prisma generate` (after installing generator) |
+This project uses **Jest** for unit and integration tests.
+
+```bash
+npm run test
+```
+
+Write your tests inside the `tests/` folder.
+
+---
+
+### 📊 Prisma ERD
+
+Generate a visual ERD with:
+
+```bash
+npm install --save-dev prisma-erd-generator @mermaid-js/mermaid-cli
+```
+
+Then add this to `schema.prisma`:
+
+```prisma
+generator erd {
+  provider = "prisma-erd-generator"
+  output   = "./ERD.svg"
+}
+```
+
+Generate:
+
+```bash
+npx prisma generate
+```
+
+---
+
+### 🚀 Deployment
+
+#### Docker
+
+```bash
+docker build -t rentmaster .
+docker run -p 5000:5000 --env-file .env rentmaster
+```
+
+#### Without Docker
+
+```bash
+npm run build
+npm start
+```
+
+---
+
+### 🎨 Screenshots
+
+> *(Add screenshots here for dashboard, login page, etc. to showcase UI)*
 
 ---
 
@@ -257,10 +311,10 @@ npm run build && npm start  # Production
 ### 🤝 Contributing
 
 1. Fork & clone repo
-2. Create a branch `git checkout -b feature-name`
-3. Commit changes `git commit -m "Add feature"`
-4. Push branch `git push origin feature-name`
-5. Open a pull request
+2. Create a branch: `git checkout -b feature-name`
+3. Commit changes: `git commit -m "Add feature"`
+4. Push branch: `git push origin feature-name`
+5. Open a Pull Request
 
 ---
 
