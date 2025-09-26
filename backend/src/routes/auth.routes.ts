@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { login, register } from '../controllers/auth.controller.js';
-import { authenticate, authorize } from '../middlewares/auth.middleware.js';
-import { validate } from '../middlewares/validation.middleware.js';
+import { authenticate, authorize } from '../middlewares/auth.middleware';
+import { validate } from '../middlewares/validation.middleware';
 import Joi from 'joi';
 
 const router = Router();

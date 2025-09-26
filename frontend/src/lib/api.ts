@@ -11,18 +11,18 @@ class ApiClient {
     })
 
     // Request interceptor to add auth token
-    this.client.interceptors.request.use(
-      (config) => {
-        const token = localStorage.getItem('token')
-        if (token) {
-          config.headers.Authorization = `Bearer ${token}`
-        }
-        return config
-      },
-      (error) => {
-        return Promise.reject(error)
+    this.client.interceptors.request.use((config) => {
+      if (config.url?.includes('/auth/login') || config.url?.includes('/auth/register')) {
+        return config; // don't attach token
       }
-    )
+    
+      const token = localStorage.getItem('token');
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+      return config;
+    });
+    
 
     // Response interceptor to handle auth errors
     this.client.interceptors.response.use(

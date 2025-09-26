@@ -38,5 +38,5 @@
     "moduleDetection": "force",
     "skipLibCheck": true
   },
-  "include": ["prisma/**/*.ts", "src/**/*.ts","env.d.ts", "src"]
+  "include": ["prisma/**/*.ts", "src/**/*.ts","env.d.ts", "src", "prisma/seed.mts"]
 }

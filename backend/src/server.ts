@@ -82,9 +82,10 @@ app.use('/api/documents', documentRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 
 // 404 handler
-app.use('*', (req, res) => {
+app.all(/.*/, (req, res) => {
   res.status(404).json({ message: 'Route not found' });
 });
+
 
 // Error handling middleware
 type AppError = Error & { status?: number };
