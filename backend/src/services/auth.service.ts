@@ -20,7 +20,8 @@ interface LoginInput {
 // Create a new user (admin-only)
 export const createUser = async (data: CreateUserInput, performedBy: string, ipAddress?: string) => {
   // Check for existing user
-  const existingUser = await prisma.user.findUnique({ where: { email: data.email } });
+
+  const existingUser = await prisma.users.findUnique({ where: { email: data.email } });
   if (existingUser) {
     throw new Error('Email already exists');
   }
@@ -29,7 +30,8 @@ export const createUser = async (data: CreateUserInput, performedBy: string, ipA
   const password_hash = await bcrypt.hash(data.password, 10);
 
   // Create user
-  const user = await prisma.user.create({
+
+  const user = await prisma.users.create({
     data: {
       email: data.email,
       password_hash,
@@ -41,7 +43,8 @@ export const createUser = async (data: CreateUserInput, performedBy: string, ipA
   });
 
   // Log audit
-  await prisma.auditLog.create({
+
+  await prisma.auditLogs.create({
     data: {
       user_id: performedBy,
       action: 'CREATE',
@@ -65,7 +68,8 @@ export const createUser = async (data: CreateUserInput, performedBy: string, ipA
 // User login
 export const login = async ({ email, password }: LoginInput, ipAddress?: string) => {
   // Find user
-  const user = await prisma.user.findUnique({ where: { email } });
+
+  const user = await prisma.users.findUnique({ where: { email } });
   if (!user) {
     throw new Error('Invalid credentials');
   }
@@ -80,7 +84,8 @@ export const login = async ({ email, password }: LoginInput, ipAddress?: string)
   const token = signToken({ id: user.id, email: user.email, role: user.role });
 
   // Log audit
-  await prisma.auditLog.create({
+
+  await prisma.auditLogs.create({
     data: {
       user_id: user.id,
       action: 'LOGIN',
@@ -97,7 +102,8 @@ export const login = async ({ email, password }: LoginInput, ipAddress?: string)
 
 // Optional: Refresh token (if implementing refresh tokens)
 export const refreshToken = async (userId: string, ipAddress?: string) => {
-  const user = await prisma.user.findUnique({ where: { id: userId } });
+
+  const user = await prisma.users.findUnique({ where: { id: userId } });
   if (!user) {
     throw new Error('User not found');
   }
@@ -105,7 +111,8 @@ export const refreshToken = async (userId: string, ipAddress?: string) => {
   const token = signToken({ id: user.id, email: user.email, role: user.role });
 
   // Log audit
-  await prisma.auditLog.create({
+
+  await prisma.auditLogs.create({
     data: {
       user_id: user.id,
       action: 'REFRESH_TOKEN',

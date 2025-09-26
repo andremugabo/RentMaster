@@ -15,7 +15,8 @@ const logFormat = winston.format.combine(
 
 // Create logger instance
 export const logger = winston.createLogger({
-  level: config.logging.level || 'info', // Default to 'info' if not set in .env
+
+  level: config.logLevel || 'info', 
   format: logFormat,
   transports: [
     // Console transport for development
