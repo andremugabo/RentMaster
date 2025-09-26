@@ -38,10 +38,10 @@ const config: AppConfig = {
   env: (process.env['NODE_ENV'] as AppConfig['env']) || 'development',
   port: Number(process.env['PORT'] ?? 5000),
   db: {
-    url: requireEnv('DATABASE_URL'),
+    url: process.env['DATABASE_URL'] ?? 'postgres://postgres:postgres@localhost:5432/rentmaster',
   },
   auth: {
-    jwtSecret: requireEnv('JWT_SECRET'),
+    jwtSecret: process.env['JWT_SECRET'] ?? 'dev-secret',
     jwtExpiresIn: process.env['JWT_EXPIRES_IN'] ?? '1h', 
   },
   logging: {

@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
   "dev": "nodemon",
-  "seed": "node --loader ts-node/esm prisma/seed.ts",
+  "seed": "tsx prisma/seed.ts",
   "start": "node dist/server.mjs"
 },
   "prisma": {
@@ -27,6 +27,7 @@
     "nodemon": "^3.1.10",
     "prisma-erd-generator": "^2.1.0",
     "ts-node": "^10.9.2",
+    "tsx": "^4.19.1",
     "typescript": "^5.9.2"
   },
   "dependencies": {
