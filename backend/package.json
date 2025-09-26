@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
   "dev": "nodemon",
-  "seed": "node prisma/seed.mts",
+  "seed": "node --loader ts-node/esm prisma/seed.ts",
   "start": "node dist/server.mjs"
 },
   "prisma": {

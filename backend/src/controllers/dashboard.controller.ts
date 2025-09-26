@@ -170,7 +170,7 @@ export const getDashboardStats = async (req: Request, res: Response) => {
       })),
       topProperties
     });
-  } catch (error: any) {
+  } catch (error) {
     logger.error('Error fetching dashboard stats:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
@@ -183,23 +183,22 @@ export const getRevenueReport = async (req: Request, res: Response) => {
     const startDate = start_date ? new Date(start_date as string) : new Date(new Date().getFullYear(), 0, 1);
     const endDate = end_date ? new Date(end_date as string) : new Date();
 
-    let groupByClause: any = {};
-    
-    if (group_by === 'month') {
-      groupByClause = {
-        year: { year: { paid_at: true } },
-        month: { month: { paid_at: true } }
-      };
-    } else if (group_by === 'day') {
-      groupByClause = {
-        year: { year: { paid_at: true } },
-        month: { month: { paid_at: true } },
-        day: { day: { paid_at: true } }
-      };
-    }
+    const groupByFields = group_by === 'day' ? ['year', 'month', 'day'] as const : ['year', 'month'] as const;
 
-    const revenueData = await prisma.payment.groupBy({
-      by: groupByClause,
+    const revenueData = await prisma.$queryRawUnsafe<Array<{ year: number; month: number; day?: number; amount: number; count: number }>>(`
+      SELECT 
+        EXTRACT(YEAR FROM paid_at)::int AS year,
+        EXTRACT(MONTH FROM paid_at)::int AS month,
+        ${group_by === 'day' ? 'EXTRACT(DAY FROM paid_at)::int AS day,' : ''}
+        COALESCE(SUM(amount), 0) AS amount,
+        COUNT(id) AS count
+      FROM "Payment"
+      WHERE status = 'COMPLETED'
+        AND paid_at >= $1
+        AND paid_at <= $2
+      GROUP BY 1,2${group_by === 'day' ? ',3' : ''}
+      ORDER BY 1 ASC, 2 ASC${group_by === 'day' ? ', 3 ASC' : ''}
+    `, startDate, endDate);
       where: {
         status: 'COMPLETED',
         paid_at: {
@@ -247,19 +246,19 @@ export const getRevenueReport = async (req: Request, res: Response) => {
       revenueData: revenueData.map(item => ({
         period: group_by === 'month' 
           ? `${item.year}-${String(item.month).padStart(2, '0')}`
-          : `${item.year}-${String(item.month).padStart(2, '0')}-${String(item.day).padStart(2, '0')}`,
-        amount: item._sum.amount || 0,
-        count: item._count.id
+          : `${item.year}-${String(item.month).padStart(2, '0')}-${String((item.day ?? 1)).padStart(2, '0')}`,
+        amount: item.amount || 0,
+        count: item.count
       })),
       revenueByPaymentMode: revenueByPaymentMode.map(item => ({
         payment_mode: paymentModeMap[item.payment_mode_id] || 'Unknown',
         amount: item._sum.amount || 0,
         count: item._count.id
       })),
-      totalRevenue: revenueData.reduce((sum, item) => sum + (item._sum.amount || 0), 0),
-      totalTransactions: revenueData.reduce((sum, item) => sum + item._count.id, 0)
+      totalRevenue: revenueData.reduce((sum, item) => sum + (item.amount || 0), 0),
+      totalTransactions: revenueData.reduce((sum, item) => sum + item.count, 0)
     });
-  } catch (error: any) {
+  } catch (error) {
     logger.error('Error fetching revenue report:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
@@ -318,8 +317,9 @@ export const getOccupancyReport = async (req: Request, res: Response) => {
       properties: occupancyData,
       overallStats
     });
-  } catch (error: any) {
+  } catch (error) {
     logger.error('Error fetching occupancy report:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 };
+

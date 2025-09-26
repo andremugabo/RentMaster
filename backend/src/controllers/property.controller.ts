@@ -21,7 +21,7 @@ export const getAllProperties = async (req: Request, res: Response) => {
     });
 
     res.json(properties);
-  } catch (error: any) {
+  } catch (error) {
     logger.error('Error fetching properties:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
@@ -48,7 +48,7 @@ export const getPropertyById = async (req: Request, res: Response) => {
     }
 
     res.json(property);
-  } catch (error: any) {
+  } catch (error) {
     logger.error('Error fetching property:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
@@ -83,7 +83,7 @@ export const createProperty = async (req: Request, res: Response) => {
 
     logger.info(`Property created: ${property.name} by ${req.user!.email}`);
     res.status(201).json(property);
-  } catch (error: any) {
+  } catch (error) {
     logger.error('Error creating property:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
@@ -126,7 +126,7 @@ export const updateProperty = async (req: Request, res: Response) => {
 
     logger.info(`Property updated: ${property.name} by ${req.user!.email}`);
     res.json(property);
-  } catch (error: any) {
+  } catch (error) {
     logger.error('Error updating property:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
@@ -167,7 +167,7 @@ export const deleteProperty = async (req: Request, res: Response) => {
 
     logger.info(`Property deleted: ${existingProperty.name} by ${req.user!.email}`);
     res.status(204).send();
-  } catch (error: any) {
+  } catch (error) {
     logger.error('Error deleting property:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
@@ -217,7 +217,7 @@ export const createLocal = async (req: Request, res: Response) => {
 
     logger.info(`Local created: ${local.reference_code} by ${req.user!.email}`);
     res.status(201).json(local);
-  } catch (error: any) {
+  } catch (error) {
     logger.error('Error creating local:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
@@ -269,7 +269,7 @@ export const updateLocal = async (req: Request, res: Response) => {
 
     logger.info(`Local updated: ${local.reference_code} by ${req.user!.email}`);
     res.json(local);
-  } catch (error: any) {
+  } catch (error) {
     logger.error('Error updating local:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
@@ -310,8 +310,9 @@ export const deleteLocal = async (req: Request, res: Response) => {
 
     logger.info(`Local deleted: ${existingLocal.reference_code} by ${req.user!.email}`);
     res.status(204).send();
-  } catch (error: any) {
+  } catch (error) {
     logger.error('Error deleting local:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 };
+

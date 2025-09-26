@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 import { logger } from '../utils/logger.js';
 
 const prisma = new PrismaClient();
@@ -8,7 +8,7 @@ export const getAllPayments = async (req: Request, res: Response) => {
   try {
     const { lease_id, status, payment_mode_id, start_date, end_date } = req.query;
     
-    const where: any = {};
+    const where: Prisma.PaymentWhereInput = {};
     
     if (lease_id) {
       where.lease_id = lease_id;
@@ -52,7 +52,7 @@ export const getAllPayments = async (req: Request, res: Response) => {
     });
 
     res.json(payments);
-  } catch (error: any) {
+  } catch (error) {
     logger.error('Error fetching payments:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
@@ -84,7 +84,7 @@ export const getPaymentById = async (req: Request, res: Response) => {
     }
 
     res.json(payment);
-  } catch (error: any) {
+  } catch (error) {
     logger.error('Error fetching payment:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
@@ -152,7 +152,7 @@ export const createPayment = async (req: Request, res: Response) => {
 
     logger.info(`Payment created: ${payment.id} by ${req.user!.email}`);
     res.status(201).json(payment);
-  } catch (error: any) {
+  } catch (error) {
     logger.error('Error creating payment:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
@@ -206,7 +206,7 @@ export const updatePayment = async (req: Request, res: Response) => {
 
     logger.info(`Payment updated: ${payment.id} by ${req.user!.email}`);
     res.json(payment);
-  } catch (error: any) {
+  } catch (error) {
     logger.error('Error updating payment:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
@@ -241,7 +241,7 @@ export const deletePayment = async (req: Request, res: Response) => {
 
     logger.info(`Payment deleted: ${id} by ${req.user!.email}`);
     res.status(204).send();
-  } catch (error: any) {
+  } catch (error) {
     logger.error('Error deleting payment:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
@@ -254,8 +254,9 @@ export const getPaymentModes = async (req: Request, res: Response) => {
     });
 
     res.json(paymentModes);
-  } catch (error: any) {
+  } catch (error) {
     logger.error('Error fetching payment modes:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 };
+

@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 import { logger } from '../utils/logger.js';
 import multer from 'multer';
 import path from 'path';
@@ -112,7 +112,7 @@ export const uploadDocument = async (req: Request, res: Response) => {
       uploaded_at: document.uploaded_at,
       file_url: `/api/documents/${document.id}/download`
     });
-  } catch (error: any) {
+  } catch (error) {
     logger.error('Error uploading document:', error);
     if (req.file) {
       fs.unlinkSync(req.file.path);
@@ -125,7 +125,7 @@ export const getDocuments = async (req: Request, res: Response) => {
   try {
     const { owner_table, owner_id } = req.query;
     
-    const where: any = {};
+    const where: Prisma.DocumentWhereInput = {};
     
     if (owner_table) {
       where.owner_table = owner_table;
@@ -155,7 +155,7 @@ export const getDocuments = async (req: Request, res: Response) => {
     }));
 
     res.json(documentsWithUrls);
-  } catch (error: any) {
+  } catch (error) {
     logger.error('Error fetching documents:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
@@ -185,7 +185,7 @@ export const getDocumentById = async (req: Request, res: Response) => {
       ...document,
       file_url: `/api/documents/${document.id}/download`
     });
-  } catch (error: any) {
+  } catch (error) {
     logger.error('Error fetching document:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
@@ -207,7 +207,7 @@ export const downloadDocument = async (req: Request, res: Response) => {
     }
 
     res.download(filePath, document.filename);
-  } catch (error: any) {
+  } catch (error) {
     logger.error('Error downloading document:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
@@ -244,8 +244,9 @@ export const deleteDocument = async (req: Request, res: Response) => {
 
     logger.info(`Document deleted: ${existingDocument.filename} by ${req.user!.email}`);
     res.status(204).send();
-  } catch (error: any) {
+  } catch (error) {
     logger.error('Error deleting document:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 };
+

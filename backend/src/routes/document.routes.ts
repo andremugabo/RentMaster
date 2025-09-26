@@ -198,3 +198,4 @@ router.delete('/:id', authenticate, authorize(['ADMIN', 'MANAGER']), deleteDocum
 router.get('/:id/download', authenticate, downloadDocument);
 
 export default router;
+

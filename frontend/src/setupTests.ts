@@ -19,3 +19,4 @@ global.localStorage = localStorageMock
 // Mock window.location
 delete (window as any).location
 window.location = { href: '' } as any
+

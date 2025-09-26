@@ -138,3 +138,4 @@ router.get('/revenue', authenticate, getRevenueReport);
 router.get('/occupancy', authenticate, getOccupancyReport);
 
 export default router;
+

@@ -87,7 +87,8 @@ app.use('*', (req, res) => {
 });
 
 // Error handling middleware
-app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+type AppError = Error & { status?: number };
+app.use((err: AppError, req: express.Request, res: express.Response, next: express.NextFunction) => {
   logger.error('Unhandled error:', err);
   res.status(err.status || 500).json({
     message: err.message || 'Internal server error',
@@ -104,3 +105,4 @@ app.listen(PORT, () => {
 });
 
 export default app;
+

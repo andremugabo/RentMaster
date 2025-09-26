@@ -223,3 +223,4 @@ router.put('/:id', authenticate, authorize(['ADMIN', 'MANAGER']), validate(payme
 router.delete('/:id', authenticate, authorize(['ADMIN']), deletePayment);
 
 export default router;
+

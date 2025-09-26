@@ -252,3 +252,4 @@ router.put('/locals/:id', authenticate, authorize(['ADMIN', 'MANAGER']), validat
 router.delete('/locals/:id', authenticate, authorize(['ADMIN']), deleteLocal);
 
 export default router;
+

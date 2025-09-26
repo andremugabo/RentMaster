@@ -209,3 +209,4 @@ router.put('/:id', authenticate, authorize(['ADMIN', 'MANAGER']), validate(lease
 router.post('/:id/terminate', authenticate, authorize(['ADMIN', 'MANAGER']), validate(terminateLeaseSchema), terminateLease);
 
 export default router;
+

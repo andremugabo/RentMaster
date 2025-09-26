@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 import { logger } from '../utils/logger.js';
 
 const prisma = new PrismaClient();
@@ -8,7 +8,7 @@ export const getAllTenants = async (req: Request, res: Response) => {
   try {
     const { search, type } = req.query;
     
-    const where: any = {};
+    const where: Prisma.TenantWhereInput = {};
     
     if (search) {
       where.OR = [
@@ -39,7 +39,7 @@ export const getAllTenants = async (req: Request, res: Response) => {
     });
 
     res.json(tenants);
-  } catch (error: any) {
+  } catch (error) {
     logger.error('Error fetching tenants:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
@@ -73,7 +73,7 @@ export const getTenantById = async (req: Request, res: Response) => {
     }
 
     res.json(tenant);
-  } catch (error: any) {
+  } catch (error) {
     logger.error('Error fetching tenant:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
@@ -109,7 +109,7 @@ export const createTenant = async (req: Request, res: Response) => {
 
     logger.info(`Tenant created: ${tenant.name} by ${req.user!.email}`);
     res.status(201).json(tenant);
-  } catch (error: any) {
+  } catch (error) {
     logger.error('Error creating tenant:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
@@ -153,7 +153,7 @@ export const updateTenant = async (req: Request, res: Response) => {
 
     logger.info(`Tenant updated: ${tenant.name} by ${req.user!.email}`);
     res.json(tenant);
-  } catch (error: any) {
+  } catch (error) {
     logger.error('Error updating tenant:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
@@ -194,8 +194,9 @@ export const deleteTenant = async (req: Request, res: Response) => {
 
     logger.info(`Tenant deleted: ${existingTenant.name} by ${req.user!.email}`);
     res.status(204).send();
-  } catch (error: any) {
+  } catch (error) {
     logger.error('Error deleting tenant:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 };
+

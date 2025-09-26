@@ -167,3 +167,4 @@ router.put('/:id', authenticate, authorize(['ADMIN', 'MANAGER']), validate(tenan
 router.delete('/:id', authenticate, authorize(['ADMIN']), deleteTenant);
 
 export default router;
+

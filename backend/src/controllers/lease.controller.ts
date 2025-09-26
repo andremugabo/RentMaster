@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 import { logger } from '../utils/logger.js';
 
 const prisma = new PrismaClient();
@@ -8,7 +8,7 @@ export const getAllLeases = async (req: Request, res: Response) => {
   try {
     const { status, tenant_id, local_id } = req.query;
     
-    const where: any = {};
+    const where: Prisma.LeaseWhereInput = {};
     
     if (status) {
       where.status = status;
@@ -42,7 +42,7 @@ export const getAllLeases = async (req: Request, res: Response) => {
     });
 
     res.json(leases);
-  } catch (error: any) {
+  } catch (error) {
     logger.error('Error fetching leases:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
@@ -75,7 +75,7 @@ export const getLeaseById = async (req: Request, res: Response) => {
     }
 
     res.json(lease);
-  } catch (error: any) {
+  } catch (error) {
     logger.error('Error fetching lease:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
@@ -163,7 +163,7 @@ export const createLease = async (req: Request, res: Response) => {
 
     logger.info(`Lease created: ${lease.lease_reference} by ${req.user!.email}`);
     res.status(201).json(lease);
-  } catch (error: any) {
+  } catch (error) {
     logger.error('Error creating lease:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
@@ -239,7 +239,7 @@ export const updateLease = async (req: Request, res: Response) => {
 
     logger.info(`Lease updated: ${lease.lease_reference} by ${req.user!.email}`);
     res.json(lease);
-  } catch (error: any) {
+  } catch (error) {
     logger.error('Error updating lease:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
@@ -296,8 +296,9 @@ export const terminateLease = async (req: Request, res: Response) => {
 
     logger.info(`Lease terminated: ${lease.lease_reference} by ${req.user!.email}`);
     res.json(lease);
-  } catch (error: any) {
+  } catch (error) {
     logger.error('Error terminating lease:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 };
+

@@ -76,3 +76,4 @@ volumes:
 networks:
   rentmaster-network:
     driver: bridge
+
