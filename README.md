@@ -1,324 +1,296 @@
-# RentMaster
+# RentMaster - Property Management System
 
-## 🏢 Property Management System
+A comprehensive full-stack property management system built with modern technologies for efficient rental property management.
 
-**RentMaster** is a modern, scalable property management platform designed to simplify **property, tenant, lease, payment, and document management** across multiple locations.
-Built with **Node.js, TypeScript, Prisma, React, and Tailwind**, it provides a secure, maintainable, and developer-friendly experience.
+## 🚀 Features
 
----
+### Core Functionality
+- **Property Management**: Create and manage properties with multiple units
+- **Tenant Management**: Handle individual and company tenants
+- **Lease Management**: Create, update, and terminate lease agreements
+- **Payment Tracking**: Record and track rental payments with multiple payment methods
+- **Document Management**: Upload and organize property-related documents
+- **Dashboard Analytics**: Real-time insights and reporting
+- **User Management**: Role-based access control (Admin/Manager)
 
-### 🎯 Why RentMaster?
+### Technical Features
+- **Authentication**: JWT-based secure authentication
+- **Real-time Updates**: Live data synchronization
+- **Responsive Design**: Mobile-first responsive UI
+- **File Upload**: Document management with file upload
+- **Search & Filtering**: Advanced search and filtering capabilities
+- **Audit Logging**: Complete activity tracking
+- **API Documentation**: Swagger/OpenAPI documentation
 
-Managing rental properties across multiple locations is challenging — spreadsheets and manual tracking often lead to **missed payments, lost contracts, and frustrated tenants**.
-**RentMaster** centralizes everything in one place: **tenants, leases, payments, notifications, and reports** — making property management **faster, more reliable, and stress-free**.
+## 🏗️ Architecture
 
----
+### Backend (Node.js + TypeScript)
+- **Framework**: Express.js
+- **Database**: PostgreSQL with Prisma ORM
+- **Authentication**: JWT + Bcrypt
+- **Validation**: Joi
+- **Logging**: Winston
+- **Documentation**: Swagger/OpenAPI
+- **Security**: Helmet, CORS
 
-### 🚀 Tech Stack
+### Frontend (React + TypeScript)
+- **Framework**: React 18 with Vite
+- **Styling**: Tailwind CSS + Shadcn/UI
+- **State Management**: React Query (TanStack Query)
+- **Forms**: React Hook Form + Zod validation
+- **Routing**: React Router v6
+- **HTTP Client**: Axios
 
-**Backend**
+### Infrastructure
+- **Containerization**: Docker + Docker Compose
+- **Database**: PostgreSQL
+- **Reverse Proxy**: Nginx
+- **Process Management**: PM2 (production)
 
-* **Node.js + TypeScript** – Runtime and type safety
-* **Express** – REST API framework
-* **Prisma** – Type-safe ORM for PostgreSQL
-* **Joi** – Input validation
-* **JWT + Bcrypt** – Authentication & password security
-* **Winston** – Structured logging
-* **Swagger** – Interactive API documentation
-* **Helmet & CORS** – Security middleware
+## 📋 Prerequisites
 
-**Frontend**
+- Node.js 18+ 
+- PostgreSQL 14+
+- Docker & Docker Compose (optional)
 
-* **React + Vite** – UI & development tooling
-* **Tailwind CSS + Shadcn/UI** – Fast, clean, customizable styling
-* **React Query** – Data fetching and caching
-* **React Hook Form + Zod** – Form handling and validation
-* **Axios** – API requests with interceptors
+## 🚀 Quick Start
 
-**Database**
+### Using Docker (Recommended)
 
-* **PostgreSQL** – Relational database with UUID & JSONB support
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd RentMaster
+   ```
 
----
+2. **Start the application**
+   ```bash
+   docker-compose up -d
+   ```
 
-### 🏗 System Architecture
+3. **Access the application**
+   - Frontend: http://localhost:3000
+   - Backend API: http://localhost:5000
+   - API Documentation: http://localhost:5000/api/docs
 
-```mermaid
-graph TD
-    A[Frontend: React + Vite] -->|REST API| B[Backend: Express + TypeScript]
-    B -->|ORM| C[(PostgreSQL)]
-    B --> D[Authentication: JWT + Bcrypt]
-    B --> E[Storage: S3 or Local File System]
-    B --> F[Logging: Winston]
-```
-
----
-
-### 📦 Features
-
-* 👥 **User Management** – Role-based access (Admin, Manager)
-* 🏢 **Property Management** – Properties, locals, and their statuses
-* 🧾 **Lease Management** – Billing cycles, statuses, and renewals
-* 💳 **Payments** – Record transactions and upload proofs
-* 📂 **Documents** – Lease contracts, payment receipts (S3-ready)
-* 🔔 **Notifications** – Email, SMS, or system alerts
-* 🛡 **Audit Logs** – Track user actions for security
-* 📊 **Reports** – Payments, occupancy, and performance dashboards
-* 📱 **Responsive UI** – Mobile- and desktop-friendly
-
----
-
-### 🔑 Environment Variables
-
-| Variable         | Description                       | Example                                                  |
-| ---------------- | --------------------------------- | -------------------------------------------------------- |
-| `PORT`           | Server port                       | `5000`                                                   |
-| `DATABASE_URL`   | Prisma database connection string | `postgresql://postgres:123@localhost:5432/rentmaster_db` |
-| `JWT_SECRET`     | Secret key for JWT signing        | `supersecretkey`                                         |
-| `JWT_EXPIRES_IN` | Token expiry duration             | `1h`                                                     |
-
-Create a `.env` file in your backend folder with the above variables.
-
----
-
-### 📚 API Documentation
-
-When the server is running, visit:
-
-```
-http://localhost:5000/api/docs
-```
-
-to open **Swagger UI** and test all API endpoints interactively.
-
----
-
-### 🗄 Example Prisma Schema
-
-```prisma
-generator client {
-  provider = "prisma-client-js"
-}
-
-datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
-
-model User {
-  id            String   @id @default(uuid())
-  email         String   @unique
-  password_hash String
-  full_name     String
-  role          Role
-  is_active     Boolean  @default(true)
-  created_at    DateTime @default(now())
-  leases        Lease[]
-}
-
-model Property {
-  id          String  @id @default(uuid())
-  name        String
-  location    String
-  description String?
-  locals      Local[]
-  created_at  DateTime @default(now())
-}
-
-model Local {
-  id             String   @id @default(uuid())
-  reference_code String   @unique
-  status         LocalStatus
-  size_m2        Float?
-  property       Property @relation(fields: [property_id], references: [id])
-  property_id    String
-  leases         Lease[]
-}
-
-model Lease {
-  id         String   @id @default(uuid())
-  start_date DateTime
-  end_date   DateTime
-  status     LeaseStatus
-  local      Local    @relation(fields: [local_id], references: [id])
-  local_id   String
-  tenant     Tenant   @relation(fields: [tenant_id], references: [id])
-  tenant_id  String
-  payments   Payment[]
-  documents  Document[] @relation("LeaseDocuments")
-}
-
-model Payment {
-  id              String       @id @default(uuid())
-  amount          Float
-  date            DateTime     @default(now())
-  payment_mode    PaymentMode  @relation(fields: [payment_mode_id], references: [id])
-  payment_mode_id String
-  lease           Lease        @relation(fields: [lease_id], references: [id])
-  lease_id        String
-  documents       Document[]   @relation("PaymentDocuments")
-}
-
-model Document {
-  id          String   @id @default(uuid())
-  file_url    String
-  file_type   String
-  uploaded_at DateTime @default(now())
-  owner_id    String
-  lease       Lease?   @relation("LeaseDocuments", fields: [owner_id], references: [id])
-  payment     Payment? @relation("PaymentDocuments", fields: [owner_id], references: [id])
-}
-
-model PaymentMode {
-  id             String  @id @default(uuid())
-  code           String  @unique
-  display_name   String
-  requires_proof Boolean @default(false)
-  payments       Payment[]
-}
-
-model Tenant {
-  id        String   @id @default(uuid())
-  name      String
-  email     String?
-  phone     String?
-  leases    Lease[]
-}
-
-enum Role {
-  ADMIN
-  MANAGER
-}
-
-enum LocalStatus {
-  AVAILABLE
-  OCCUPIED
-  UNDER_MAINTENANCE
-}
-
-enum LeaseStatus {
-  ACTIVE
-  EXPIRED
-  TERMINATED
-}
-```
-
----
-
-### ⚙️ Installation
+### Manual Setup
 
 #### Backend Setup
 
+1. **Navigate to backend directory**
+   ```bash
+   cd backend
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Environment configuration**
+   ```bash
+   cp env.example .env
+   # Edit .env with your database credentials
+   ```
+
+4. **Database setup**
+   ```bash
+   npx prisma migrate dev --name init
+   npx prisma db seed
+   ```
+
+5. **Start the backend**
+   ```bash
+   npm run dev
+   ```
+
+#### Frontend Setup
+
+1. **Navigate to frontend directory**
+   ```bash
+   cd frontend
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Start the frontend**
+   ```bash
+   npm run dev
+   ```
+
+## 🔐 Default Credentials
+
+- **Admin**: admin@rentmaster.com / Admin@123
+- **Manager**: manager@rentmaster.com / Manager@123
+
+## 📁 Project Structure
+
+```
+RentMaster/
+├── backend/
+│   ├── src/
+│   │   ├── controllers/     # API controllers
+│   │   ├── services/        # Business logic
+│   │   ├── routes/          # API routes
+│   │   ├── middlewares/     # Express middlewares
+│   │   ├── utils/           # Utility functions
+│   │   └── config/          # Configuration
+│   ├── prisma/
+│   │   ├── schema.prisma    # Database schema
+│   │   └── seed.ts          # Database seeding
+│   └── package.json
+├── frontend/
+│   ├── src/
+│   │   ├── components/      # React components
+│   │   ├── pages/           # Page components
+│   │   ├── hooks/           # Custom hooks
+│   │   ├── lib/             # Utilities and API client
+│   │   ├── types/           # TypeScript types
+│   │   └── contexts/        # React contexts
+│   └── package.json
+├── docker-compose.yml
+├── nginx.conf
+└── README.md
+```
+
+## 🧪 Testing
+
+### Backend Tests
 ```bash
-git clone https://github.com/andremugabo/RentMaster.git
-cd RentMaster/backend
-npm install
-npm install --save-dev nodemon
+cd backend
+npm test
 ```
 
-Run migrations & generate client:
-
+### Frontend Tests
 ```bash
-npx prisma generate
-npx prisma migrate dev --name init
+cd frontend
+npm test
 ```
 
-Seed database with initial data:
-
+### Test Coverage
 ```bash
-npx prisma db seed
+cd frontend
+npm run test:coverage
 ```
 
-Start the server:
+## 📊 API Documentation
 
-```bash
-npm run dev             # Development
-npm run build && npm start  # Production
+The API documentation is available at `/api/docs` when the backend is running. It includes:
+
+- Authentication endpoints
+- Property management APIs
+- Tenant management APIs
+- Lease management APIs
+- Payment tracking APIs
+- Document management APIs
+- Dashboard analytics APIs
+
+## 🔧 Configuration
+
+### Environment Variables
+
+#### Backend (.env)
+```env
+PORT=5000
+DATABASE_URL="postgresql://user:password@localhost:5432/rentmaster_db"
+JWT_SECRET="your-secret-key"
+JWT_EXPIRES_IN="1h"
+LOG_LEVEL="info"
 ```
 
----
-
-### 🧪 Testing
-
-This project uses **Jest** for unit and integration tests.
-
-```bash
-npm run test
+#### Frontend (.env)
+```env
+VITE_API_BASE_URL="http://localhost:5000/api"
 ```
 
-Write your tests inside the `tests/` folder.
+## 🚀 Deployment
 
----
+### Production Deployment
 
-### 📊 Prisma ERD
+1. **Build the application**
+   ```bash
+   # Backend
+   cd backend
+   npm run build
+   
+   # Frontend
+   cd frontend
+   npm run build
+   ```
 
-Generate a visual ERD with:
+2. **Deploy with Docker**
+   ```bash
+   docker-compose -f docker-compose.prod.yml up -d
+   ```
 
-```bash
-npm install --save-dev prisma-erd-generator @mermaid-js/mermaid-cli
-```
+### Environment-specific Configurations
 
-Then add this to `schema.prisma`:
+- **Development**: Hot reload, debug logging
+- **Production**: Optimized builds, security headers, SSL
 
-```prisma
-generator erd {
-  provider = "prisma-erd-generator"
-  output   = "./ERD.svg"
-}
-```
+## 📈 Monitoring & Logging
 
-Generate:
+- **Application Logs**: Winston logging with file rotation
+- **Audit Trail**: Complete user activity tracking
+- **Error Tracking**: Comprehensive error logging
+- **Performance**: Request/response timing
 
-```bash
-npx prisma generate
-```
+## 🔒 Security Features
 
----
+- **Authentication**: JWT-based authentication
+- **Authorization**: Role-based access control
+- **Input Validation**: Comprehensive input sanitization
+- **Security Headers**: Helmet.js security middleware
+- **CORS**: Configurable cross-origin resource sharing
+- **Rate Limiting**: API rate limiting (configurable)
 
-### 🚀 Deployment
+## 🤝 Contributing
 
-#### Docker
-
-```bash
-docker build -t rentmaster .
-docker run -p 5000:5000 --env-file .env rentmaster
-```
-
-#### Without Docker
-
-```bash
-npm run build
-npm start
-```
-
----
-
-### 🎨 Screenshots
-
-> *(Add screenshots here for dashboard, login page, etc. to showcase UI)*
-
----
-
-### 📈 Scaling & Maintenance
-
-* Caching with **Redis**
-* Containerization with **Docker**
-* Background jobs (queues) for heavy tasks
-* Indexing and query optimization for performance
-
----
-
-### 🤝 Contributing
-
-1. Fork & clone repo
-2. Create a branch: `git checkout -b feature-name`
-3. Commit changes: `git commit -m "Add feature"`
-4. Push branch: `git push origin feature-name`
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
+## 📝 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🆘 Support
+
+For support and questions:
+- Create an issue in the repository
+- Check the API documentation at `/api/docs`
+- Review the code comments and documentation
+
+## 🗺️ Roadmap
+
+### Phase 1 (Current)
+- ✅ Core property management
+- ✅ Tenant management
+- ✅ Lease management
+- ✅ Payment tracking
+- ✅ Document management
+- ✅ Dashboard analytics
+
+### Phase 2 (Planned)
+- 🔄 Tenant portal
+- 🔄 Mobile application
+- 🔄 Advanced reporting
+- 🔄 Email notifications
+- 🔄 Maintenance requests
+- 🔄 Financial reporting
+
+### Phase 3 (Future)
+- 🔄 Multi-language support
+- 🔄 Advanced analytics
+- 🔄 Third-party integrations
+- 🔄 API marketplace
+- 🔄 White-label solutions
+
 ---
 
-### 📜 License
-
-MIT License – free to use and modify.
-
+**RentMaster** - Streamlining property management with modern technology.

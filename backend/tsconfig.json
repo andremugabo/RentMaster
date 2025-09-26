@@ -20,6 +20,10 @@
     "noUncheckedIndexedAccess": true,
     "exactOptionalPropertyTypes": true,
     "strict": true,
+    "typeRoots": [
+      "./node_modules/@types",
+      "./types" 
+    ],
 
     /* 💡 Style / Quality Options (Optional but Recommended) */
     "noImplicitReturns": true,
@@ -34,5 +38,5 @@
     "moduleDetection": "force",
     "skipLibCheck": true
   },
-  "include": ["prisma/**/*.ts", "src/**/*.ts"]
+  "include": ["prisma/**/*.ts", "src/**/*.ts","env.d.ts", "src"]
 }

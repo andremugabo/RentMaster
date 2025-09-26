@@ -11,7 +11,7 @@ dotenv.config({ path: path.resolve(process.cwd(), envFile) });
 function requireEnv(key: keyof NodeJS.ProcessEnv): string {
   const value = process.env[key];
   if (!value) {
-    throw new Error(`❌ Missing required environment variable: ${key} (from ${envFile})`);
+    throw new Error(` Missing required environment variable: ${key} (from ${envFile})`);
   }
   return value;
 }
@@ -42,7 +42,7 @@ const config: AppConfig = {
   },
   auth: {
     jwtSecret: requireEnv('JWT_SECRET'),
-    jwtExpiresIn: process.env['JWT_EXPIRES_IN'] ?? '1d', // default to 1 day
+    jwtExpiresIn: process.env['JWT_EXPIRES_IN'] ?? '1h', 
   },
   logging: {
     level: (process.env['LOG_LEVEL'] as AppConfig['logging']['level']) ?? 'info',
