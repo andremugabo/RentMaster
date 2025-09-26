@@ -178,27 +178,17 @@ export const getDashboardStats = async (req: Request, res: Response) => {
 
 export const getRevenueReport = async (req: Request, res: Response) => {
   try {
-    const { start_date, end_date, group_by = 'month' } = req.query;
+    const { start_date, end_date, group_by = 'month' } = req.query as {
+      start_date?: string;
+      end_date?: string;
+      group_by?: 'day' | 'month';
+    };
 
-    const startDate = start_date ? new Date(start_date as string) : new Date(new Date().getFullYear(), 0, 1);
-    const endDate = end_date ? new Date(end_date as string) : new Date();
+    const startDate = start_date ? new Date(start_date) : new Date(new Date().getFullYear(), 0, 1);
+    const endDate = end_date ? new Date(end_date) : new Date();
 
-    const groupByFields = group_by === 'day' ? ['year', 'month', 'day'] as const : ['year', 'month'] as const;
-
-    const revenueData = await prisma.$queryRawUnsafe<Array<{ year: number; month: number; day?: number; amount: number; count: number }>>(`
-      SELECT 
-        EXTRACT(YEAR FROM paid_at)::int AS year,
-        EXTRACT(MONTH FROM paid_at)::int AS month,
-        ${group_by === 'day' ? 'EXTRACT(DAY FROM paid_at)::int AS day,' : ''}
-        COALESCE(SUM(amount), 0) AS amount,
-        COUNT(id) AS count
-      FROM "Payment"
-      WHERE status = 'COMPLETED'
-        AND paid_at >= $1
-        AND paid_at <= $2
-      GROUP BY 1,2${group_by === 'day' ? ',3' : ''}
-      ORDER BY 1 ASC, 2 ASC${group_by === 'day' ? ', 3 ASC' : ''}
-    `, startDate, endDate);
+    // Fetch completed payments in range and aggregate in JS for portability across DBs
+    const completedPayments = await prisma.payment.findMany({
       where: {
         status: 'COMPLETED',
         paid_at: {
@@ -206,56 +196,58 @@ export const getRevenueReport = async (req: Request, res: Response) => {
           lte: endDate
         }
       },
-      _sum: {
-        amount: true
+      select: {
+        id: true,
+        amount: true,
+        paid_at: true,
+        payment_mode_id: true
       },
-      _count: {
-        id: true
-      },
-      orderBy: {
-        paid_at: 'asc'
-      }
+      orderBy: { paid_at: 'asc' }
     });
 
-    // Get revenue by payment mode
-    const revenueByPaymentMode = await prisma.payment.groupBy({
-      by: ['payment_mode_id'],
-      where: {
-        status: 'COMPLETED',
-        paid_at: {
-          gte: startDate,
-          lte: endDate
-        }
-      },
-      _sum: {
-        amount: true
-      },
-      _count: {
-        id: true
-      }
-    });
+    // Group by month or day
+    const revenueBucketMap = new Map<string, { amount: number; count: number }>();
+    for (const p of completedPayments) {
+      const d = p.paid_at as Date;
+      const key = group_by === 'day'
+        ? `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+        : `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+      const curr = revenueBucketMap.get(key) || { amount: 0, count: 0 };
+      curr.amount += Number(p.amount) || 0;
+      curr.count += 1;
+      revenueBucketMap.set(key, curr);
+    }
 
-    // Get payment modes for display names
+    const revenueData = Array.from(revenueBucketMap.entries())
+      .sort((a, b) => a[0].localeCompare(b[0]))
+      .map(([period, data]) => ({ period, amount: data.amount, count: data.count }));
+
+    // Revenue by payment mode
+    const paymentModeAgg = new Map<string, { amount: number; count: number }>();
+    for (const p of completedPayments) {
+      const key = p.payment_mode_id ?? 'unknown';
+      const curr = paymentModeAgg.get(key) || { amount: 0, count: 0 };
+      curr.amount += Number(p.amount) || 0;
+      curr.count += 1;
+      paymentModeAgg.set(key, curr);
+    }
+
     const paymentModes = await prisma.paymentMode.findMany();
     const paymentModeMap = paymentModes.reduce((acc, mode) => {
       acc[mode.id] = mode.display_name;
       return acc;
     }, {} as Record<string, string>);
 
+    const revenueByPaymentMode = Array.from(paymentModeAgg.entries()).map(([modeId, data]) => ({
+      payment_mode: paymentModeMap[modeId] || 'Unknown',
+      amount: data.amount,
+      count: data.count
+    }));
+
     res.json({
-      revenueData: revenueData.map(item => ({
-        period: group_by === 'month' 
-          ? `${item.year}-${String(item.month).padStart(2, '0')}`
-          : `${item.year}-${String(item.month).padStart(2, '0')}-${String((item.day ?? 1)).padStart(2, '0')}`,
-        amount: item.amount || 0,
-        count: item.count
-      })),
-      revenueByPaymentMode: revenueByPaymentMode.map(item => ({
-        payment_mode: paymentModeMap[item.payment_mode_id] || 'Unknown',
-        amount: item._sum.amount || 0,
-        count: item._count.id
-      })),
-      totalRevenue: revenueData.reduce((sum, item) => sum + (item.amount || 0), 0),
+      revenueData,
+      revenueByPaymentMode,
+      totalRevenue: revenueData.reduce((sum, item) => sum + item.amount, 0),
       totalTransactions: revenueData.reduce((sum, item) => sum + item.count, 0)
     });
   } catch (error) {

@@ -3,7 +3,7 @@ import {
   getDashboardStats,
   getRevenueReport,
   getOccupancyReport
-} from '../controllers/dashboard.controller.js';
+} from '../controllers/dashboard.controller';
 import { authenticate } from '../middlewares/auth.middleware.js';
 
 const router = Router();
